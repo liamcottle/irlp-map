@@ -1,0 +1,203 @@
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Interactive IRLP Map</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <style>
+
+        .icon-idle {
+            background-color: #16a34a;
+            border-radius: 25px;
+            border: 1px solid white;
+        }
+
+        .icon-down {
+            background-color: #dc2626;
+            border-radius: 25px;
+            border: 1px solid white;
+        }
+
+        .icon-linked {
+            background-color: #2563eb;
+            border-radius: 25px;
+            border: 1px solid white;
+        }
+
+    </style>
+
+</head>
+<body class="h-full bg-gray-200">
+<div v-cloak id="app" class="flex flex-col h-full w-full overflow-hidden">
+    <div id="map" style="width:100%;height:100%;"></div>
+</div>
+<script>
+
+    // create map positioned over AU and NZ
+    var map = L.map('map').setView([
+        -30,
+        170,
+    ], 3);
+
+    var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    // create layer groups
+    var nodesLayerGroup = new L.LayerGroup();
+    var connectionsLayerGroup = new L.LayerGroup();
+
+    // create icons
+    var iconIdle = L.divIcon({ className: 'icon-idle'});
+    var iconDown = L.divIcon({ className: 'icon-down'});
+    var iconLinked = L.divIcon({ className: 'icon-linked'});
+
+    var baseLayers = {
+        "OpenStreetMap": openStreetMap,
+    };
+
+    var overlays = {
+        "Nodes": nodesLayerGroup,
+        "Connections": connectionsLayerGroup,
+    };
+
+    // add layers to control ui
+    L.control.layers(baseLayers, overlays).addTo(map);
+
+    // add layers to map that should be enabled by default
+    nodesLayerGroup.addTo(map);
+
+    function isNumeric(str) {
+        if (typeof str != "string") return false // we only process strings!
+        return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+            !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    }
+
+    function isValidLatLng(lat, lng) {
+
+        if(isNaN(lat) || isNaN(lng)){
+            return false;
+        }
+
+        if(lat == 0 && lng == 0){
+            return false;
+        }
+
+        if(lat < -90 || lat > 90){
+            return false;
+        }
+
+        if(lng < -180 || lng > 180){
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function isNodeIdle(node) {
+        return node.status === "IDLE";
+    }
+
+    function isNodeDown(node) {
+        return node.status === ""
+            || node.status === "DOWN";
+    }
+
+    function onNodesUpdated(nodes) {
+
+        var nodeMarkers = {};
+
+        // add nodes
+        for(var node of nodes){
+
+            var id = node.node;
+            var status = node.status;
+            var callsign = node.call_sign;
+            var location = node.city + ", " + node.country;
+            var frequency = node.freq;
+            var frequency_offset = node.offset;
+            var url = node.url;
+            var hasLocation = isValidLatLng(node.lat, node.long);
+
+            var isLinked = isNumeric(status);
+            var isReflector = callsign.startsWith("REF");
+
+            var tooltip = (isReflector ? `<b>Reflector ${id}</b>` : `<b>Node ${id}</b>`)
+                + `<br/>Status: ` + (isLinked ? `connected to ${status}` : status)
+                + (!isReflector ? `<br/>Call Sign: ${callsign}` : '')
+                + (!isReflector ? `<br/>Frequency: ${frequency}` : '')
+                + (!isReflector ? `<br/>Offset: ${frequency_offset}` : '')
+                + (url ? `<br/>Website: ${url}` : '')
+                + `<br/>${location}`;
+
+            if(hasLocation){
+
+                var icon = iconDown;
+
+                if(isNodeIdle(node)){
+                    icon = iconIdle;
+                } else if(isLinked){
+                    icon = iconLinked;
+                } else if(isNodeDown(node)){
+                    icon = iconDown;
+                }
+
+                // create node marker
+                var marker = L.marker([node.lat, node.long], {
+                    icon: icon,
+                }).bindTooltip(tooltip)
+                    .addTo(nodesLayerGroup)
+
+                // add to cache
+                nodeMarkers[id] = marker;
+
+            }
+
+        }
+
+        // add node connections
+        for(var node of nodes){
+
+            var id = node.node;
+            var status = node.status;
+            var isLinked = isNumeric(status);
+
+            if(isLinked){
+
+                var currentNode = nodeMarkers[id];
+                var connectedNode = nodeMarkers[status];
+
+                if(currentNode && connectedNode){
+
+                    L.polyline([
+                        currentNode.getLatLng(),
+                        connectedNode.getLatLng(),
+                    ], {
+                        color: '#2563eb',
+                        opacity: 0.5,
+                    }).addTo(connectionsLayerGroup);
+
+                }
+            }
+
+        }
+
+    }
+
+    // fetch irlp nodes
+    fetch('https://irlp.liamcottle.net/nodes/status.json').then(async (response) => {
+        var json = await response.json();
+        onNodesUpdated(json.nodes);
+    });
+
+</script>
+</body>
+</html>
