@@ -59,6 +59,19 @@
     var iconDown = L.divIcon({ className: 'icon-down'});
     var iconLinked = L.divIcon({ className: 'icon-linked'});
 
+    // create legend
+    var legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend');
+        div.style.backgroundColor = 'white';
+        div.style.padding = '12px';
+        div.innerHTML = `<div style="margin-bottom:6px;"><strong>Legend</strong></div>`
+            + `<div style="display:flex"><div class="icon-idle" style="width:12px;height:12px;margin-right:4px;margin-top:auto;margin-bottom:auto;"></div> IDLE</div>`
+            + `<div style="display:flex"><div class="icon-down" style="width:12px;height:12px;margin-right:4px;margin-top:auto;margin-bottom:auto;"></div> DOWN</div>`
+            + `<div style="display:flex"><div class="icon-linked" style="width:12px;height:12px;margin-right:4px;margin-top:auto;margin-bottom:auto;"></div> LINKED</div>`;
+        return div;
+    };
+
     var baseLayers = {
         "OpenStreetMap": openStreetMap,
     };
@@ -73,6 +86,7 @@
 
     // add layers to map that should be enabled by default
     nodesLayerGroup.addTo(map);
+    legend.addTo(map);
 
     function isNumeric(str) {
         if (typeof str != "string") return false // we only process strings!
