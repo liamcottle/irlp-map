@@ -149,7 +149,7 @@
                 + (!isReflector ? `<br/>Call Sign: ${callsign}` : '')
                 + (!isReflector ? `<br/>Frequency: ${frequency}` : '')
                 + (!isReflector ? `<br/>Offset: ${frequency_offset}` : '')
-                + (url ? `<br/>Website: ${url}` : '')
+                + (url ? `<br/>Website: <a target="_blank" href="${url}">${url}</a>` : '')
                 + `<br/>${location}`;
 
             if(hasLocation){
@@ -168,6 +168,7 @@
                 var marker = L.marker([node.lat, node.long], {
                     icon: icon,
                 }).bindTooltip(tooltip)
+                    .bindPopup(tooltip)
                     .addTo(nodesLayerGroup)
 
                 // add to cache
