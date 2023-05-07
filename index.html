@@ -209,7 +209,7 @@
     }
 
     // fetch irlp nodes
-    fetch('https://irlp.liamcottle.net/nodes/status.json').then(async (response) => {
+    fetch('https://irlp.liamcottle.net/api/v1/nodes').then(async (response) => {
         var json = await response.json();
         onNodesUpdated(json.nodes);
     });
