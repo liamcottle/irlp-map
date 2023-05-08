@@ -147,25 +147,9 @@
         // add nodes
         for(var node of nodes){
 
-            var id = node.node;
-            var status = node.status;
-            var callsign = node.call_sign;
-            var location = node.city + ", " + node.country;
-            var frequency = node.freq;
-            var frequency_offset = node.offset;
-            var url = node.url;
-            var hasLocation = isValidLatLng(node.lat, node.long);
-
-            var isLinked = isNumeric(status);
-            var isReflector = callsign.startsWith("REF");
-
-            var tooltip = (isReflector ? `<b>Reflector ${id}</b>` : `<b>Node ${id}</b>`)
-                + `<br/>Status: ` + (isLinked ? `connected to ${status}` : status)
-                + (!isReflector ? `<br/>Call Sign: ${callsign}` : '')
-                + (!isReflector ? `<br/>Frequency: ${frequency}` : '')
-                + (!isReflector ? `<br/>Offset: ${frequency_offset}` : '')
-                + (url ? `<br/>Website: <a target="_blank" href="${url}">${url}</a>` : '')
-                + `<br/>${location}`;
+            var isLinked = isNumeric(node.status);
+            var isReflector = node.callsign.startsWith("REF");
+            var hasLocation = isValidLatLng(node.latitude, node.longitude);
 
             if(hasLocation){
 
@@ -179,15 +163,26 @@
                     icon = iconDown;
                 }
 
+                // create tooltip
+                var location = node.city + ", " + node.country;
+                var tooltip = (isReflector ? `<b>Reflector ${node.id}</b>` : `<b>Node ${node.id}</b>`)
+                    + `<br/>Status: ` + (isLinked ? `connected to ${node.status}` : node.status)
+                    + (!isReflector ? `<br/>Call Sign: ${node.callsign}` : '')
+                    + (!isReflector ? `<br/>Frequency: ${node.frequency_output_mhz} MHz` : '')
+                    + (!isReflector ? `<br/>Offset: ${node.frequency_offset_khz} kHz` : '')
+                    + (!isReflector ? `<br/>Tone: ${node.frequency_ctcss_hz} Hz` : '')
+                    + (node.url ? `<br/>Website: <a target="_blank" href="${node.url}">${node.url}</a>` : '')
+                    + `<br/>${location}`;
+
                 // create node marker
-                var marker = L.marker([node.lat, node.long], {
+                var marker = L.marker([node.latitude, node.longitude], {
                     icon: icon,
                 }).bindTooltip(tooltip)
                     .bindPopup(tooltip)
                     .addTo(nodesLayerGroup)
 
                 // add to cache
-                nodeMarkers[id] = marker;
+                nodeMarkers[node.id] = marker;
 
             }
 
@@ -196,14 +191,12 @@
         // add node connections
         for(var node of nodes){
 
-            var id = node.node;
-            var status = node.status;
-            var isLinked = isNumeric(status);
+            var isLinked = isNumeric(node.status);
 
             if(isLinked){
 
-                var currentNode = nodeMarkers[id];
-                var connectedNode = nodeMarkers[status];
+                var currentNode = nodeMarkers[node.id];
+                var connectedNode = nodeMarkers[node.status];
 
                 if(currentNode && connectedNode){
 
