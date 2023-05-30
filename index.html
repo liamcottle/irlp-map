@@ -262,6 +262,10 @@
             return;
         }
 
+        // close all popups and tooltips
+        closeAllPopups();
+        closeAllTooltips();
+
         // select node
         showNodeOutline(id);
 
@@ -270,6 +274,25 @@
             animate: true,
         });
 
+        // open tooltip
+        nodeMarker.openTooltip();
+
+    }
+
+    function closeAllPopups() {
+        map.eachLayer(function(layer) {
+            if(layer.options.pane === "popupPane"){
+                layer.removeFrom(map);
+            }
+        });
+    }
+
+    function closeAllTooltips() {
+        map.eachLayer(function(layer) {
+            if(layer.options.pane === "tooltipPane"){
+                layer.removeFrom(map);
+            }
+        });
     }
 
     function clearNodeOutline() {
