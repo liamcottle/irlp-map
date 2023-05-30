@@ -70,7 +70,7 @@
                 <div class="text-sm">Created by <a class="link" target="_blank" href="https://liamcottle.com">Liam Cottle</a> <a class="link" target="_blank" href="https://www.qrz.com/db/zl2dev">ZL2DEV</a></div>
             </div>
             <div class="flex my-auto ml-auto mr-2 space-x-2">
-                <a href="#" onclick="goToNode(prompt('Find by Node Number'))">
+                <a href="#" onclick="searchNodes()">
                     <div id="search-button" class="hover:bg-gray-200 p-2 rounded-full">
                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -102,6 +102,7 @@
 <script>
 
     // global state
+    var nodes = [];
     var nodeMarkers = {};
     var selectedNodeOutlineCircle = null;
 
@@ -205,6 +206,45 @@
             || node.status === "DOWN";
     }
 
+    function searchNodes() {
+
+        // ask user for input
+        var search = prompt('Find by Call Sign or Node Number');
+        if(search === null || search === ""){
+            return;
+        }
+
+        // find node
+        var node = findNode(search);
+        if(!node){
+            alert("Could not find node: " + search);
+            return;
+        }
+
+        goToNode(node.id);
+
+    }
+
+    function findNode(search) {
+
+        for(var node of nodes){
+
+            // find by id
+            if(node.id.toString() === search){
+                return node;
+            }
+
+            // find by callsign
+            if(node.callsign.toLowerCase() === search.toLowerCase()){
+                return node;
+            }
+
+        }
+
+        return null;
+
+    }
+
     function goToNode(id){
 
         // make sure provided node number is numeric
@@ -254,7 +294,10 @@
 
     }
 
-    function onNodesUpdated(nodes) {
+    function onNodesUpdated(updatedNodes) {
+
+        // update nodes cache
+        nodes = updatedNodes;
 
         // add nodes
         for(var node of nodes){
