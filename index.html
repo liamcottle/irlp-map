@@ -70,6 +70,13 @@
                 <div class="text-sm">Created by <a class="link" target="_blank" href="https://liamcottle.com">Liam Cottle</a> <a class="link" target="_blank" href="https://www.qrz.com/db/zl2dev">ZL2DEV</a></div>
             </div>
             <div class="flex my-auto ml-auto mr-2 space-x-2">
+                <a href="#" onclick="goToNode(prompt('Find by Node Number'))">
+                    <div id="search-button" class="hover:bg-gray-200 p-2 rounded-full">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                </a>
                 <a href="#" onclick="window.location.reload()">
                     <div id="reload-button" class="hover:bg-gray-200 p-2 rounded-full">
                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -93,6 +100,9 @@
     </div>
 </div>
 <script>
+
+    // global state
+    var nodeMarkers = {};
 
     // set map bounds to be a little more than full size to prevent panning off screen
     var bounds = [
@@ -189,9 +199,28 @@
             || node.status === "DOWN";
     }
 
-    function onNodesUpdated(nodes) {
+    function goToNode(id){
 
-        var nodeMarkers = {};
+        // make sure provided node number is numeric
+        if(!isNumeric(id)){
+            return;
+        }
+
+        // find node marker by id
+        var nodeMarker = nodeMarkers[id];
+        if(!nodeMarker){
+            alert("Could not find node: " + id);
+            return;
+        }
+
+        // fly to node marker
+        map.flyTo(nodeMarker.getLatLng(), 10, {
+            animate: true,
+        });
+
+    }
+
+    function onNodesUpdated(nodes) {
 
         // add nodes
         for(var node of nodes){
