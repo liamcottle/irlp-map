@@ -103,6 +103,7 @@
 
     // global state
     var nodeMarkers = {};
+    var selectedNodeOutlineCircle = null;
 
     // set map bounds to be a little more than full size to prevent panning off screen
     var bounds = [
@@ -162,6 +163,11 @@
     connectionsLayerGroup.addTo(map);
     legend.addTo(map);
 
+    // remove outline when map clicked
+    map.on('click', function() {
+        clearNodeOutline();
+    });
+
     function isNumeric(str) {
         if (typeof str != "string") return false // we only process strings!
         return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
@@ -213,10 +219,38 @@
             return;
         }
 
+        // select node
+        showNodeOutline(id);
+
         // fly to node marker
         map.flyTo(nodeMarker.getLatLng(), 10, {
             animate: true,
         });
+
+    }
+
+    function clearNodeOutline() {
+        if(selectedNodeOutlineCircle){
+            selectedNodeOutlineCircle.removeFrom(map);
+            selectedNodeOutlineCircle = null;
+        }
+    }
+
+    function showNodeOutline(id) {
+
+        // remove any existing node circle
+        clearNodeOutline();
+
+        // find node marker by id
+        var nodeMarker = nodeMarkers[id];
+        if(!nodeMarker){
+            return;
+        }
+
+        // add circle around node
+        selectedNodeOutlineCircle = L.circle(nodeMarker.getLatLng(), {
+            radius: 10000, // 10km
+        }).addTo(map);
 
     }
 
@@ -257,7 +291,7 @@
                     icon: icon,
                 }).bindTooltip(tooltip)
                     .bindPopup(tooltip)
-                    .addTo(nodesLayerGroup)
+                    .addTo(nodesLayerGroup);
 
                 // add to cache
                 nodeMarkers[node.id] = marker;
