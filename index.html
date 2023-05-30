@@ -291,6 +291,10 @@
                     icon: icon,
                 }).bindTooltip(tooltip)
                     .bindPopup(tooltip)
+                    .on('click', function(event) {
+                        // close tooltip on click to prevent tooltip and popup showing at same time
+                        event.target.closeTooltip();
+                    })
                     .addTo(nodesLayerGroup);
 
                 // add to cache
