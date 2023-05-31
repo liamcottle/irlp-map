@@ -361,11 +361,11 @@
         // clear previous data
         clearMap();
 
-        // update nodes cache
-        nodes = updatedNodes;
+        // clear nodes cache
+        nodes = [];
 
         // add nodes
-        for(var node of nodes){
+        for(var node of updatedNodes){
 
             var isLinked = isNumeric(node.status);
             var isReflector = node.callsign.startsWith("REF");
@@ -406,6 +406,7 @@
                     .addTo(nodesLayerGroup);
 
                 // add to cache
+                nodes.push(node);
                 nodeMarkers[node.id] = marker;
 
             }
