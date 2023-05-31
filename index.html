@@ -81,6 +81,13 @@
                         </svg>
                     </div>
                 </a>
+                <a href="#" onclick="goToRandomNode()">
+                    <div id="random-button" class="hover:bg-gray-200 p-2 rounded-full">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                        </svg>
+                    </div>
+                </a>
                 <a href="#" onclick="reload()">
                     <div id="reload-button" class="hover:bg-gray-200 p-2 rounded-full">
                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -281,6 +288,15 @@
         // open tooltip
         nodeMarker.openTooltip();
 
+    }
+
+    function goToRandomNode() {
+        if(nodes.length > 0){
+            const randomNode = nodes[Math.floor(Math.random() * nodes.length)];
+            if(randomNode){
+                goToNode(randomNode.id);
+            }
+        }
     }
 
     function clearAllNodes() {
