@@ -445,7 +445,7 @@
                 // create tooltip
                 var location = node.city + ", " + node.country;
                 var tooltip = (isReflector ? `<b>Reflector ${node.id}</b>` : `<b>Node ${node.id}</b>`)
-                    + `<br/>Status: ` + (isLinked ? `connected to ${node.status}` : node.status)
+                    + `<br/>Status: ` + (isLinked ? `connected to <a href="#" onclick="goToNode('${node.status}')">${node.status}</a>` : node.status)
                     + (!isReflector ? `<br/>Call Sign: ${node.callsign}` : '')
                     + (!isReflector ? `<br/>Frequency: ${node.frequency_output_mhz} MHz` : '')
                     + (!isReflector ? `<br/>Offset: ${node.frequency_offset_khz} kHz` : '')
