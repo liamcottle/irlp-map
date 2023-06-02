@@ -176,10 +176,18 @@
     var nodeMarkers = {};
     var selectedNodeOutlineCircle = null;
 
+    // set map bounds to be a little more than full size to prevent panning off screen
+    var bounds = [
+        [-100, -60], // top left
+        [100, 420], // bottom right
+    ];
+
     // create map positioned over AU and NZ
-    var map = L.map('map').setView([
+    var map = L.map('map', {
+        maxBounds: bounds,
+    }).setView([
         -15,
-        170,
+        150,
     ], 3);
 
     // remove leaflet link
