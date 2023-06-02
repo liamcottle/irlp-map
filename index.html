@@ -176,16 +176,8 @@
     var nodeMarkers = {};
     var selectedNodeOutlineCircle = null;
 
-    // set map bounds to be a little more than full size to prevent panning off screen
-    var bounds = [
-        [-100, -190],
-        [100, 190]
-    ];
-
     // create map positioned over AU and NZ
-    var map = L.map('map', {
-        maxBounds: bounds,
-    }).setView([
+    var map = L.map('map').setView([
         -15,
         170,
     ], 3);
@@ -195,7 +187,6 @@
 
     var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Data from <a target="_blank" href="https://status.irlp.net">IRLP.net</a>',
-        bounds: bounds,
     }).addTo(map);
 
     // create layer groups
@@ -431,6 +422,12 @@
             var hasLocation = isValidLatLng(node.latitude, node.longitude);
 
             if(hasLocation){
+
+                // wrap longitude for shortest path
+                var longitude = parseFloat(node.longitude);
+                if(longitude < 0){
+                    node.longitude = (longitude += 360);
+                }
 
                 var icon = iconDown;
 
