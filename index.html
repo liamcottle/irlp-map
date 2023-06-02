@@ -189,8 +189,8 @@
 
     // set map bounds to be a little more than full size to prevent panning off screen
     var bounds = [
-        [-100, -60], // top left
-        [100, 420], // bottom right
+        [-100, 70], // top left
+        [100, 500], // bottom right
     ];
 
     // create map positioned over AU and NZ
@@ -442,9 +442,9 @@
 
             if(hasLocation){
 
-                // wrap longitude for shortest path
+                // wrap longitude for shortest path, everything to left of australia should be shown on the right
                 var longitude = parseFloat(node.longitude);
-                if(longitude < 0){
+                if(longitude <= 100){
                     node.longitude = (longitude += 360);
                 }
 
