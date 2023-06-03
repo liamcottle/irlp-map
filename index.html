@@ -183,7 +183,8 @@
 <script>
 
     // global state
-    var nodes = [];
+    var nodes = []; // nodes that we are able to show on map (have location)
+    var allNodes = []; // all nodes, even if we can't show them
     var nodeMarkers = {};
     var selectedNodeOutlineCircle = null;
 
@@ -430,6 +431,10 @@
         clearNodeOutline();
     }
 
+    function getIrlpDotNetNodeUrl(id) {
+        return `https://status.irlp.net/index.php?PSTART=11&nodeid=${id}`;
+    }
+
     function onNodesUpdated(updatedNodes) {
 
         // clear previous data
@@ -437,9 +442,12 @@
 
         // clear nodes cache
         nodes = [];
+        allNodes = [];
 
         // add nodes
         for(var node of updatedNodes){
+
+            allNodes.push(node);
 
             var isLinked = isNumeric(node.status);
             var isReflector = node.callsign.startsWith("REF");
@@ -466,8 +474,8 @@
                 // create tooltip
                 var location = node.city + ", " + node.country;
 
-                // get nodes connected to this node
-                var connections = nodes.filter(function(n) {
+                // get all nodes connected to this node (even if they aren't on map)
+                var connections = allNodes.filter(function(n) {
                     return n.status === node.id;
                 });
 
@@ -479,7 +487,8 @@
                     + (!isReflector ? `<br/>Offset: ${node.frequency_offset_khz} kHz` : '')
                     + (!isReflector ? `<br/>Tone: ${node.frequency_ctcss_hz} Hz` : '')
                     + (node.url ? `<br/>Website: <a target="_blank" href="${node.url}">${node.url}</a>` : '')
-                    + `<br/>${location}`;
+                    + `<br/>${location}`
+                    + `<br/><a target="_blank" href="${getIrlpDotNetNodeUrl(node.id)}">View on IRLP.net</a>`;
 
                 // create node marker
                 var marker = L.marker([node.latitude, node.longitude], {
