@@ -334,6 +334,25 @@
 
     }
 
+    function findNodeMarkerById(id) {
+
+        // find node marker by id
+        var nodeMarker = nodeMarkers[id];
+        if(nodeMarker){
+            return nodeMarker;
+        }
+
+        // find node marker by main reflector id
+        var reflectorIdChannelZero =`${id.substring(0, id.length - 1)}0`;
+        var reflectorMarker = nodeMarkers[reflectorIdChannelZero];
+        if(reflectorMarker){
+            return reflectorMarker;
+        }
+
+        return null;
+
+    }
+
     function goToNode(id){
 
         // make sure provided node number is numeric
@@ -342,9 +361,8 @@
         }
 
         // find node marker by id
-        var nodeMarker = nodeMarkers[id];
+        var nodeMarker = findNodeMarkerById(id);
         if(!nodeMarker){
-            alert("Could not find node: " + id);
             return;
         }
 
@@ -435,6 +453,15 @@
         return `https://status.irlp.net/index.php?PSTART=11&nodeid=${id}`;
     }
 
+    function getReflectorChannelIds(reflectorId) {
+        var reflectorChannelsIds = [];
+        var reflectorIdWithoutChannel = reflectorId.substring(0, reflectorId.length - 1);
+        for(var channelNumber = 0; channelNumber < 10; channelNumber++){
+            reflectorChannelsIds.push(`${reflectorIdWithoutChannel}${channelNumber}`);
+        }
+        return reflectorChannelsIds;
+    }
+
     function onNodesUpdated(updatedNodes) {
 
         // clear previous data
@@ -475,19 +502,39 @@
                 var location = node.city + ", " + node.country;
 
                 // get all nodes connected to this node (even if they aren't on map)
-                var connections = allNodes.filter(function(n) {
-                    return n.status === node.id;
-                });
+                var connections = [];
+                var reflectorChannels = [];
+                if(isReflector){
+                    var reflectorChannelIds = getReflectorChannelIds(node.id);
+                    for(var reflectorChannelId of reflectorChannelIds){
+
+                        // get channel connections
+                        var channelConnections = allNodes.filter(function(n) {
+                            return n.status === reflectorChannelId;
+                        });
+
+                        reflectorChannels.push({
+                            id: reflectorChannelId,
+                            connections: channelConnections,
+                        });
+
+                        for(var channelConnection of channelConnections){
+                            connections.push(channelConnection);
+                        }
+
+                    }
+                }
 
                 var tooltip = (isReflector ? `<b>Reflector ${node.id}</b>` : `<b>Node ${node.id}</b>`)
                     + `<br/>Status: ` + (isLinked ? `connected to <a href="#" onclick="goToNode('${node.status}')">${node.status}</a>` : node.status)
-                    + (isReflector ? (connections.length > 0 ? `<br/>Connected Nodes: ${connections.length}` : '') : '')
                     + (!isReflector ? `<br/>Call Sign: ${node.callsign}` : '')
                     + (!isReflector ? `<br/>Frequency: ${node.frequency_output_mhz} MHz` : '')
                     + (!isReflector ? `<br/>Offset: ${node.frequency_offset_khz} kHz` : '')
                     + (!isReflector ? `<br/>Tone: ${node.frequency_ctcss_hz} Hz` : '')
                     + (node.url ? `<br/>Website: <a target="_blank" href="${node.url}">${node.url}</a>` : '')
                     + `<br/>${location}`
+                    + (isReflector ? (connections.length > 0 ? `<br/>Connected Nodes: ${connections.length}` : '') : '')
+                    + (isReflector ? ('<br/>' + reflectorChannels.map((channel) => `Channel ${channel.id}: ${channel.connections.length}`).join('<br/>')): '')
                     + `<br/><a target="_blank" href="${getIrlpDotNetNodeUrl(node.id)}">View on IRLP.net</a>`;
 
                 // create node marker
@@ -516,8 +563,8 @@
 
             if(isLinked){
 
-                var currentNode = nodeMarkers[node.id];
-                var connectedNode = nodeMarkers[node.status];
+                var currentNode = findNodeMarkerById(node.id);
+                var connectedNode = findNodeMarkerById(node.status);
 
                 if(currentNode && connectedNode){
 
