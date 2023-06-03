@@ -552,7 +552,10 @@
                 var marker = L.marker([node.latitude, node.longitude], {
                     icon: icon,
                     tagName: node.id,
-                }).bindTooltip(tooltip)
+                })
+                    .bindTooltip(tooltip, {
+                        interactive: true,
+                    })
                     .bindPopup(tooltip)
                     .on('click', function(event) {
                         // close tooltip on click to prevent tooltip and popup showing at same time
