@@ -304,28 +304,38 @@
         }
 
         // find node
-        var node = findNode(search);
-        if(!node){
+        var nodeId = findNodeId(search);
+        if(!nodeId){
             alert("Could not find node: " + search);
             return;
         }
 
-        goToNode(node.id);
+        goToNode(nodeId);
 
     }
 
-    function findNode(search) {
+    function findNodeId(search) {
 
+        // make sure search is a string
+        search = search.toString();
+
+        // find node id from existing marker
+        var nodeMarker = findNodeMarkerById(search);
+        if(nodeMarker){
+            return nodeMarker.options.tagName;
+        }
+
+        // otherwise search nodes on map
         for(var node of nodes){
 
             // find by id
             if(node.id.toString() === search){
-                return node;
+                return node.id;
             }
 
             // find by callsign
             if(node.callsign.toLowerCase() === search.toLowerCase()){
-                return node;
+                return node.id;
             }
 
         }
@@ -363,6 +373,7 @@
         // find node marker by id
         var nodeMarker = findNodeMarkerById(id);
         if(!nodeMarker){
+            alert("Could not find node on map: " + id);
             return;
         }
 
@@ -540,6 +551,7 @@
                 // create node marker
                 var marker = L.marker([node.latitude, node.longitude], {
                     icon: icon,
+                    tagName: node.id,
                 }).bindTooltip(tooltip)
                     .bindPopup(tooltip)
                     .on('click', function(event) {
