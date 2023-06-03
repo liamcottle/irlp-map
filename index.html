@@ -465,8 +465,15 @@
 
                 // create tooltip
                 var location = node.city + ", " + node.country;
+
+                // get nodes connected to this node
+                var connections = nodes.filter(function(n) {
+                    return n.status === node.id;
+                });
+
                 var tooltip = (isReflector ? `<b>Reflector ${node.id}</b>` : `<b>Node ${node.id}</b>`)
                     + `<br/>Status: ` + (isLinked ? `connected to <a href="#" onclick="goToNode('${node.status}')">${node.status}</a>` : node.status)
+                    + (isReflector ? (connections.length > 0 ? `<br/>Connected Nodes: ${connections.length}` : '') : '')
                     + (!isReflector ? `<br/>Call Sign: ${node.callsign}` : '')
                     + (!isReflector ? `<br/>Frequency: ${node.frequency_output_mhz} MHz` : '')
                     + (!isReflector ? `<br/>Offset: ${node.frequency_offset_khz} kHz` : '')
