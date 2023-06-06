@@ -752,20 +752,29 @@
         }
     }
 
-    function reload() {
+    function reload(goToNodeId) {
 
-        // fetch irlp nodes
+        // show loading
         setLoading(true);
 
+        // fetch irlp nodes
         fetch('https://irlp.liamcottle.net/api/v1/nodes').then(async (response) => {
+
+            // update nodes
             var json = await response.json();
             onNodesUpdated(json.nodes);
+
+            // hide loading
             setLoading(false);
+
+            // go to node id if provided
+            if(goToNodeId){
+                goToNode(goToNodeId);
+            }
+
         });
 
     }
-
-    reload();
 
     function toggleFavourites() {
 
@@ -777,6 +786,13 @@
         favouritesInner.classList.toggle("translate-x-0");
 
     }
+
+    // parse url params
+    var queryParams = new URLSearchParams(location.search);
+    var queryNodeId = queryParams.get('node_id');
+
+    // reload and go to provided node id
+    reload(queryNodeId);
 
 </script>
 </body>
