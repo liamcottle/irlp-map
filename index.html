@@ -93,6 +93,10 @@
             visibility: visible;
         }
 
+        .z-sidebar {
+            z-index: 1000;
+        }
+
     </style>
 
 </head>
@@ -133,6 +137,17 @@
                         <span class="tooltip-text">Search</span>
                     </div>
                 </a>
+                <a href="#" class="tooltip rounded-full" onclick="toggleFavourites()">
+                    <div id="favourites-button" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                        </svg>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="tooltip-text">Favourites</span>
+                    </div>
+                </a>
                 <a href="#" class="tooltip rounded-full" onclick="goToRandomNode()">
                     <div id="random-button" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
                         <svg class="w-6 h-6"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -159,19 +174,6 @@
                         <span class="tooltip-text">Reload</span>
                     </div>
                 </a>
-                <a href="#" class="tooltip rounded-full" onclick="alert('Click or hover a node to view its details.')">
-                    <div class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
-                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
-                            <path d="M12 17l0 .01"></path>
-                            <path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4"></path>
-                        </svg>
-                    </div>
-                    <div class="hidden sm:block">
-                        <span class="tooltip-text">Help</span>
-                    </div>
-                </a>
             </div>
         </div>
 
@@ -180,6 +182,149 @@
 
     </div>
 </div>
+
+<!-- favourites slideover -->
+<div id="favourites" class="hidden relative z-sidebar" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+    <div id="favourites-backdrop" onclick="toggleFavourites()" class="fixed inset-0 bg-gray-900 bg-opacity-50"></div>
+    <div class="fixed top-0 right-0 overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="fixed inset-y-0 right-0 flex max-w-full ml-10 sm:ml-16">
+                <div id="favourites-inner" class="translate-x-full pointer-events-auto w-screen max-w-md transform transition ease-in-out duration-500 sm:duration-700">
+                    <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+
+                        <!-- slideover header -->
+                        <div class="p-4 border-b border-gray-200">
+                            <div class="flex items-start justify-between">
+                                <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">Favourites</h2>
+                                <div class="ml-3 flex h-7 items-center">
+                                    <a href="#" class="rounded-full" onclick="toggleFavourites()">
+                                        <div class="bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
+                                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M18 6l-12 12"></path>
+                                                <path d="M6 6l12 12"></path>
+                                            </svg>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- list of favourites -->
+                        <ul role="list" class="flex-1 divide-y divide-gray-200 overflow-y-auto">
+
+                            <!-- 6105 -->
+                            <li>
+                                <div class="group relative flex items-center">
+                                    <a href="#" onclick="toggleFavourites(); goToNode('6105');" class="-m-1 block flex-1 p-4">
+                                        <div class="absolute inset-0 group-hover:bg-gray-50" aria-hidden="true"></div>
+                                        <div class="relative flex min-w-0 flex-1 items-center">
+                                            <span class="relative inline-block flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full" src="https://hatscripts.github.io/circle-flags/flags/nz.svg" alt="">
+                                            </span>
+                                            <div class="ml-4 truncate">
+                                                <p class="truncate text-sm font-medium text-gray-900">Node 6105</p>
+                                                <p class="truncate text-sm text-gray-500">ZL2AA - Gisborne, New Zealand</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <!-- 6069 -->
+                            <li>
+                                <div class="group relative flex items-center">
+                                    <a href="#" onclick="toggleFavourites(); goToNode('6069');" class="-m-1 block flex-1 p-4">
+                                        <div class="absolute inset-0 group-hover:bg-gray-50" aria-hidden="true"></div>
+                                        <div class="relative flex min-w-0 flex-1 items-center">
+                                            <span class="relative inline-block flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full" src="https://hatscripts.github.io/circle-flags/flags/nz.svg" alt="">
+                                            </span>
+                                            <div class="ml-4 truncate">
+                                                <p class="truncate text-sm font-medium text-gray-900">Node 6069</p>
+                                                <p class="truncate text-sm text-gray-500">ZL2UAK - Gisborne, New Zealand</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <!-- 6966 -->
+                            <li>
+                                <div class="group relative flex items-center">
+                                    <a href="#" onclick="toggleFavourites(); goToNode('6966');" class="-m-1 block flex-1 p-4">
+                                        <div class="absolute inset-0 group-hover:bg-gray-50" aria-hidden="true"></div>
+                                        <div class="relative flex min-w-0 flex-1 items-center">
+                                            <span class="relative inline-block flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full" src="https://hatscripts.github.io/circle-flags/flags/nz.svg" alt="">
+                                            </span>
+                                            <div class="ml-4 truncate">
+                                                <p class="truncate text-sm font-medium text-gray-900">Node 6966</p>
+                                                <p class="truncate text-sm text-gray-500">ZL1IBM - Whananaki - Northland, New Zealand</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <!-- 9100 -->
+                            <li>
+                                <div class="group relative flex items-center">
+                                    <a href="#" onclick="toggleFavourites(); goToNode('9100');" class="-m-1 block flex-1 p-4">
+                                        <div class="absolute inset-0 group-hover:bg-gray-50" aria-hidden="true"></div>
+                                        <div class="relative flex min-w-0 flex-1 items-center">
+                                            <span class="relative inline-block flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full" src="https://hatscripts.github.io/circle-flags/flags/us.svg" alt="">
+                                            </span>
+                                            <div class="ml-4 truncate">
+                                                <p class="truncate text-sm font-medium text-gray-900">Reflector 9100</p>
+                                                <p class="truncate text-sm text-gray-500">WIN System Reflector, USA</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <!-- 9500 -->
+                            <li>
+                                <div class="group relative flex items-center">
+                                    <a href="#" onclick="toggleFavourites(); goToNode('9500');" class="-m-1 block flex-1 p-4">
+                                        <div class="absolute inset-0 group-hover:bg-gray-50" aria-hidden="true"></div>
+                                        <div class="relative flex min-w-0 flex-1 items-center">
+                                            <span class="relative inline-block flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full" src="https://hatscripts.github.io/circle-flags/flags/au.svg" alt="">
+                                            </span>
+                                            <div class="ml-4 truncate">
+                                                <p class="truncate text-sm font-medium text-gray-900">Reflector 9500</p>
+                                                <p class="truncate text-sm text-gray-500">Australia East Coast, Australia</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+
+                        </ul>
+
+                        <!-- info -->
+                        <div class="flex text-small text-gray-600 p-3">
+                            <div class="my-auto mr-2">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                                    <path d="M12 9h.01"></path>
+                                    <path d="M11 12h1v4h1"></path>
+                                </svg>
+                            </div>
+                            <div class="my-auto">These will eventually be customizable.</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
     // global state
@@ -621,6 +766,17 @@
     }
 
     reload();
+
+    function toggleFavourites() {
+
+        var favourites = document.getElementById("favourites");
+        var favouritesInner = document.getElementById("favourites-inner");
+
+        favourites.classList.toggle("hidden");
+        favouritesInner.classList.toggle("translate-x-full");
+        favouritesInner.classList.toggle("translate-x-0");
+
+    }
 
 </script>
 </body>
