@@ -1,0 +1,15 @@
+[Unit]
+Description=irlp-map
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=liamcottle
+WorkingDirectory=/home/liamcottle/irlp-map
+ExecStart=/usr/bin/env node /home/liamcottle/irlp-map/index.js --port 8080
+
+[Install]
+WantedBy=multi-user.target

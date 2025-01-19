@@ -38,6 +38,19 @@ node index.js
 
 > Note: You can also use a custom port with `--port 1234`
 
+## Systemd Service
+
+A systemd service file is available and can be installed with the following commands:
+
+```
+sudo cp irlp-map.service /etc/systemd/system/irlp-map.service
+sudo systemctl enable irlp-map.service
+sudo systemctl start irlp-map.service
+sudo systemctl status irlp-map.service
+```
+
+> Note: Make sure to update the usernames in the service file if needed.
+
 ## Contributing
 
 If you have a feature request, or find a bug, please [open an issue](https://github.com/liamcottle/meshtastic-map/issues) here on GitHub.
