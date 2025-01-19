@@ -753,7 +753,7 @@
         setLoading(true);
 
         // fetch irlp nodes
-        fetch('https://irlp.liamcottle.net/api/v1/nodes').then(async (response) => {
+        fetch('/api/v1/nodes').then(async (response) => {
 
             // update nodes
             var json = await response.json();
