@@ -6,8 +6,46 @@ const express = require('express');
 const snakecaseKeys = require('snakecase-keys');
 const { JSDOM } = require('jsdom');
 const NodeCache = require("node-cache");
-const cache = new NodeCache();
+const commandLineArgs = require("command-line-args");
+const commandLineUsage = require("command-line-usage");
 
+const optionsList = [
+    {
+        name: 'help',
+        alias: 'h',
+        type: Boolean,
+        description: 'Display this usage guide.'
+    },
+    {
+        name: "port",
+        type: Number,
+        description: "Port to serve web ui and api from.",
+    },
+];
+
+// parse command line args
+const options = commandLineArgs(optionsList);
+
+// show help
+if(options.help){
+    const usage = commandLineUsage([
+        {
+            header: 'IRLP Map',
+            content: 'An interactive map of all IRLP nodes and their status.',
+        },
+        {
+            header: 'Options',
+            optionList: optionsList,
+        },
+    ]);
+    console.log(usage);
+    return;
+}
+
+// get options and fallback to default values
+const port = options["port"] ?? 8080;
+
+const cache = new NodeCache();
 const app = express();
 
 // serve files inside the public folder from /
@@ -278,7 +316,6 @@ app.get('/api/v1/reflectors', async (req, res) => {
 });
 
 // start express server
-const port = 8080;
 const listener = app.listen(port, () => {
     const port = listener.address().port;
     console.log(`Server running at http://127.0.0.1:${port}`);
